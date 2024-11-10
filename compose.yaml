@@ -1,0 +1,7 @@
+services:
+  torch:
+    build: .
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./src:/home/tiny-gpt/src
