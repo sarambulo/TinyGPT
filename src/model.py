@@ -52,10 +52,21 @@ class Tiny(nn.Module):
         loss = F.cross_entropy(y_train_hat, y_train_true)
         return y_train_hat, loss
 
-    def predict(self):
+    def generate(self, idx, max_new_tokens):
         """
         [input]: request
         [output]: respons, sequence of characters
         """
-        pass
+        for i in range(max_new_tokens):
+            # get the predictions
+            logits, _ = self(idx)
+            # care about the last time step only
+            logits = logits[:, -1, :]
+            # use a softmax to generate the list of probabilities
+            probs = F.softmax(logits, dim=-1)
+            # sample from the probability distribution
+            next = torch.multinomial(probs, num_samples=1)
+            # add index to the running sequence
+            idx = torch.cat((idx, next), dim=-1)
+        return idx
 
