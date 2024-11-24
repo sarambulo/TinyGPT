@@ -1,16 +1,19 @@
 import unittest
 from model import Tiny
-from torch import tensor
+import torch
 
 class TestModelInitialization(unittest.TestCase):
-    model = Tiny()
 
     def test_call(self):
-        # self.assertEqual('foo'.upper(), 'FOO')
-        batch = torch.tensor.zeros((1,8))
+        model = Tiny(vocab_size=60)
+        batch = torch.zeros((1,8), dtype=int)
         X_train = batch[:, :-1]
         y_train_true = batch[:, 1:]
-        model(X_train, y_train_true)
+        y_hat, loss = model(X_train, y_train_true)
+        # TODO: Check the batch dim (it should be 1, 7, 60),
+        # it is being folded into the first dim right now
+        self.assertEqual((7, 60), y_hat.shape)
+        self.assertTrue(torch.is_tensor(loss))
 
 if __name__ == '__main__':
     unittest.main()
