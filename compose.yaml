@@ -5,3 +5,4 @@ services:
     stdin_open: true
     volumes:
       - ./src:/home/tiny-gpt/src
+      - ./data:/home/tiny-gpt/data
