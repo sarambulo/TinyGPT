@@ -5,12 +5,16 @@ from torch import nn
 def train(model, dataloader, optimizer, num_epochs):
     model.train()
     max_grad_norm = 1.0
+    losses = []
 
     for epoch in range(num_epochs):
         for x, y in dataloader:
             optimizer.zero_grad()
             _, loss = model(x, y)
             loss.backward()
+            losses.append(loss[0])
             # To avoid exploding gradients
             nn.utils.clip_grad_norm_(model.parameters(), max_grad_norm)
             optimizer.step()
+            
+    return losses
