@@ -1,3 +1,4 @@
+from torch import nn
 from data import get_tinyshakespeare
 from src.interface import *
 
