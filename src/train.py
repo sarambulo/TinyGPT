@@ -12,6 +12,7 @@ def train(model, dataloader, optimizer, num_epochs):
             optimizer.zero_grad()
             _, loss = model(x, y)
             loss.backward()
+            losses.append(loss[0])
             # To avoid exploding gradients
             nn.utils.clip_grad_norm_(model.parameters(), max_grad_norm)
             optimizer.step()
