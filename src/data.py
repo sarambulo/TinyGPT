@@ -1,6 +1,6 @@
 import os
 import torch
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, random_split
 from tokenizer import Tokenizer
 
 class TextDataset(Dataset):
@@ -36,10 +36,15 @@ class TextDataset(Dataset):
         y = self.data[idx+1:idx+self.block_size+1]
         return torch.tensor(x, dtype=torch.long), torch.tensor(y, dtype=torch.long)
 
-def get_tiny_shakespeare_data(block_size):
+def get_tiny_shakespeare_data(block_size, train_ratio=0.9):
     """
     Load and tokenize the Tiny Shakespeare dataset.
-    Returns the dataset and tokenizer.
+    Splits the data into training and validation sets.
+    
+    Outputs:
+     * train_dataset: training dataset
+     * val_dataset: validation dataset
+     * tokenizer: instance of Tokenizer
     """
     TINY_SHAKESPEARE_PATH = os.path.join("data", "tinyshakespeare", "input.txt")
     with open(TINY_SHAKESPEARE_PATH, 'r', encoding='utf-8') as f:
@@ -47,10 +52,18 @@ def get_tiny_shakespeare_data(block_size):
     
     tokenizer = Tokenizer(text)
     dataset = TextDataset(text, tokenizer, block_size)
-    return dataset, tokenizer
+    
+    # Compute sizes for train and validation splits
+    train_size = int(len(dataset) * train_ratio)
+    val_size = len(dataset) - train_size
+
+    # Split the dataset
+    train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
+    return train_dataset, val_dataset, tokenizer
 
 if __name__ == "__main__":
     block_size = 128  # Example block size
-    dataset, tokenizer = get_tiny_shakespeare_data(block_size)
+    train_dataset, val_dataset, tokenizer = get_tiny_shakespeare_data(block_size)
     print(f"Vocabulary size: {tokenizer.vocab_size}")
-    print(f"Dataset size: {len(dataset)}")
+    print(f"Training dataset size: {len(train_dataset)}")
+    print(f"Validation dataset size: {len(val_dataset)}")
