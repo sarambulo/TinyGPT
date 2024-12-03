@@ -69,4 +69,3 @@ class Tiny(nn.Module):
             # add index to the running sequence
             idx = torch.cat((idx, next), dim=-1)
         return idx
-
