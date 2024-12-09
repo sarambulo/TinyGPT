@@ -2,21 +2,7 @@ import torch
 import torch.nn as nn
 from torch.nn import functional as F
 
-def encode():
-    """
-    [@input]: input sequence of tokens (characters)
-    [@return]: sequence of embeddings (integers)
-    """
-    pass
-
-def decode():
-    """
-    [@input]: sequence of embeddings (integers)
-    [@return]: input sequence of tokens (characters)
-    """
-    pass
-
-class Tiny(nn.Module):
+class TinyBigram(nn.Module):
     """
     Bigram Model
 
@@ -24,15 +10,10 @@ class Tiny(nn.Module):
     - `token_embedding_table`: Table with the probability of ocurrence 
     of each token (columns) given the previous token (rows)
     """
-    def __init__(self, vocab_size):
+    def __init__(self, vocab_size, device="cpu"):
         super().__init__()
-        self.token_embedding_table = nn.Embedding(vocab_size, vocab_size)
-
-    def get_batch(self, dataset):
-        """
-        [@return]: matrix with batch rows, n features for colums, c channels
-        """
-        pass
+        self.token_embedding_table = nn.Embedding(vocab_size, vocab_size, device=device)
+        self.device = device
     
     def forward(self, X_train: torch.Tensor, y_train_true: torch.Tensor): 
         """

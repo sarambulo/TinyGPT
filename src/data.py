@@ -7,10 +7,11 @@ class TextDataset(Dataset):
     """
     Dataset class to handle text data and batching.
     """
-    def __init__(self, text, tokenizer, block_size):
+    def __init__(self, text, tokenizer, block_size, device="cpu"):
         self.tokenizer = tokenizer
         self.block_size = block_size
         self.data = self.tokenizer.encode(text)
+        self.device = device
     
     def __len__(self):
         return len(self.data) - self.block_size
@@ -33,10 +34,12 @@ class TextDataset(Dataset):
         to predict the next token in the sequence for each position in `x`.
         """
         x = self.data[idx:idx+self.block_size]
+        x = torch.tensor(x, dtype=torch.long, device=self.device)
         y = self.data[idx+1:idx+self.block_size+1]
-        return torch.tensor(x, dtype=torch.long), torch.tensor(y, dtype=torch.long)
+        y = torch.tensor(y, dtype=torch.long, device=self.device)
+        return x, y
 
-def get_tiny_shakespeare_data(block_size, train_ratio=0.9):
+def get_tiny_shakespeare_data(block_size, train_ratio=0.9, device="cpu"):
     """
     Load and tokenize the Tiny Shakespeare dataset.
     Splits the data into training and validation sets.
@@ -51,7 +54,7 @@ def get_tiny_shakespeare_data(block_size, train_ratio=0.9):
         text = f.read()
     
     tokenizer = Tokenizer(text)
-    dataset = TextDataset(text, tokenizer, block_size)
+    dataset = TextDataset(text, tokenizer, block_size, device=device)
     
     # Compute sizes for train and validation splits
     train_size = int(len(dataset) * train_ratio)
